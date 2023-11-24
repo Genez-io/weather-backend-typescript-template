@@ -1,7 +1,7 @@
 {
-  "name": "genezio-server",
+  "name": "genezio-wheather-backend-typescript-template",
   "version": "1.0.0",
-  "description": "The implementation of the hello world genezio server",
+  "description": "The implementation of a wheather app server",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@genezio/types": "^0.1.9"
+    "@genezio/types": "^0.1.9",
+    "axios": "^1.6.2"
   }
 }

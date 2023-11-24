@@ -1,5 +1,7 @@
 name: wheather-backend-typescript-template
 region: us-east-1
 language: ts
+cloudProvider: genezio
 scripts:
   preBackendDeploy: npm install
+packageManager: npm
