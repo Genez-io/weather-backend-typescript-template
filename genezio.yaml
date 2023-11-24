@@ -1,0 +1,5 @@
+name: wheather-backend-typescript-template
+region: us-east-1
+language: ts
+scripts:
+  preBackendDeploy: npm install
