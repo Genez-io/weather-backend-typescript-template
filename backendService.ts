@@ -50,25 +50,18 @@ export class BackendService {
     const resLocation = await axios.get(
       `https://wttr.in/:geo-location?location=${location}`
     );
-
     const res = await axios.get(`https://wttr.in/${location}?M&format=j1`);
+
     const condition = res.data.current_condition[0];
     const rawWeather = condition.weatherDesc[0].value;
-    const weatherConditionMapped = this.#mapWeatherCondition(rawWeather);
-    const actualTemperature = condition.temp_C;
-    const address = resLocation.data.address;
-    const humidity = condition.humidity;
-    const wind = condition.windspeedKmph;
-    const precipitation = condition.precipMM;
-    const pressure = condition.pressure;
     return {
-      actualTemperature: actualTemperature,
-      weatherCondition: weatherConditionMapped,
-      location: address,
-      humidity: humidity,
-      wind: wind,
-      precipitation: precipitation,
-      pressure: pressure,
+      actualTemperature: condition.temp_C,
+      weatherCondition: this.#mapWeatherCondition(rawWeather),
+      location: resLocation.data.address,
+      humidity: condition.humidity,
+      wind: condition.windspeedKmph,
+      precipitation: condition.precipMM,
+      pressure: condition.pressure,
     };
   }
 }
