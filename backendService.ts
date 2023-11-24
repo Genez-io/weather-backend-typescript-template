@@ -10,6 +10,35 @@ export class BackendService {
     this.favorites = [];
   }
 
+  #mapWeatherCondition(rawCondition: string): string {
+    let weatherConditionMapped = "CLEAR_DAY";
+    switch (true) {
+      case rawCondition === "Sunny":
+        weatherConditionMapped = "CLEAR_DAY";
+        break;
+      case rawCondition === "PartlyCloudy":
+        weatherConditionMapped = "PARTLY_CLOUDY_DAY";
+        break;
+      case rawCondition.indexOf("Cloudy") != -1:
+        weatherConditionMapped = "CLOUDY";
+        break;
+      case rawCondition.indexOf("Sleet") != -1:
+        weatherConditionMapped = "SLEET";
+        break;
+      case rawCondition.indexOf("Snow") != -1:
+        weatherConditionMapped = "SNOW";
+        break;
+      case rawCondition.indexOf("Rain") != -1 ||
+        rawCondition.indexOf("Showers") != -1:
+        weatherConditionMapped = "RAIN";
+        break;
+      case rawCondition === "Fog":
+        weatherConditionMapped = "FOG";
+        break;
+    }
+    return weatherConditionMapped;
+  }
+
   async setFavorites(newFavorites: Array<string>): Promise<void> {
     this.favorites = [...newFavorites];
   }
@@ -17,65 +46,15 @@ export class BackendService {
   async getFavorites(): Promise<Array<string>> {
     return this.favorites;
   }
-  async getWheather(location: string): Promise<WeatherInfo> {
+  async getWeather(location: string): Promise<WeatherInfo> {
     const resLocation = await axios.get(
       `https://wttr.in/:geo-location?location=${location}`
     );
 
     const res = await axios.get(`https://wttr.in/${location}?M&format=j1`);
     const condition = res.data.current_condition[0];
-    let weatherConditionMapped: string = "CLEAR_DAY";
-    const weatherConditionUnmapped = condition.weatherDesc[0].value;
-    if (weatherConditionUnmapped == "Sunny") {
-      let date = new Date(condition.localObsDateTime);
-      if (date.getHours() >= 7 && date.getHours() <= 19) {
-        weatherConditionMapped = "CLEAR_DAY";
-      } else {
-        weatherConditionMapped = "CLEAR_NIGHT";
-      }
-    }
-    if (weatherConditionUnmapped == "PartlyCloudy") {
-      let date = new Date(condition.localObsDateTime);
-      if (date.getHours() >= 7 && date.getHours() <= 19) {
-        weatherConditionMapped = "PARTLY_CLOUDY_DAY";
-      } else {
-        weatherConditionMapped = "PARTLY_CLOUDY_NIGHT";
-      }
-    }
-    if (
-      weatherConditionUnmapped == "Cloudy" ||
-      weatherConditionUnmapped == "VeryCloudy"
-    ) {
-      weatherConditionMapped = "CLOUDY";
-    }
-    if (
-      weatherConditionUnmapped == "HeavyRain" ||
-      weatherConditionUnmapped == "HeavyShowers" ||
-      weatherConditionUnmapped == "LightRain" ||
-      weatherConditionUnmapped == "LightShowers" ||
-      weatherConditionUnmapped == "ThunderyHeavyRain" ||
-      weatherConditionUnmapped == "ThunderyShowers"
-    ) {
-      weatherConditionMapped = "RAIN";
-    }
-    if (
-      weatherConditionUnmapped == "LightSleet" ||
-      weatherConditionUnmapped == "LightSleetShowers"
-    ) {
-      weatherConditionMapped = "SLEET";
-    }
-    if (
-      weatherConditionUnmapped == "HeavySnow" ||
-      weatherConditionUnmapped == "HeavySnowShowers" ||
-      weatherConditionUnmapped == "LightSnow" ||
-      weatherConditionUnmapped == "LightSnowShowers" ||
-      weatherConditionUnmapped == "ThunderySnowShowers"
-    ) {
-      weatherConditionMapped = "SNOW";
-    }
-    if (weatherConditionUnmapped == "Fog") {
-      weatherConditionMapped = "FOG";
-    }
+    const rawWeather = condition.weatherDesc[0].value;
+    const weatherConditionMapped = this.#mapWeatherCondition(rawWeather);
     const actualTemperature = condition.temp_C;
     const address = resLocation.data.address;
     const humidity = condition.humidity;
