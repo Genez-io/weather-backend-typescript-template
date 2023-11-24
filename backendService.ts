@@ -17,13 +17,22 @@ export class BackendService {
   async getFavorites(): Promise<Array<string>> {
     return this.favorites;
   }
-  async getWheather(location: string) {
+  async getWheather(location: string): Promise<WeatherInfo> {
+    const resLocation = await axios.get(
+      `https://wttr.in/:geo-location?location=${location}`
+    );
+
     const res = await axios.get(`https://wttr.in/${location}?M&format=j1`);
+    const condition = res.data.current_condition[0];
+    const lat = resLocation.data.latitude;
+    const lng = resLocation.data.longitude;
+    const resV2 = await axios.get(
+      `https://api.sunrisesunset.io/json?lat=${lat}&lng=${lng}`
+    );
     let weatherConditionMapped: string = "CLEAR_DAY";
-    const weatherConditionUnmapped =
-      res.data.current_condition[0].weatherDesc[0].value;
+    const weatherConditionUnmapped = condition.weatherDesc[0].value;
     if (weatherConditionUnmapped == "Sunny") {
-      let date = new Date(res.data.current_condition[0].localObsDateTime);
+      let date = new Date(condition.localObsDateTime);
       if (date.getHours() >= 7 && date.getHours() <= 19) {
         weatherConditionMapped = "CLEAR_DAY";
       } else {
@@ -31,7 +40,7 @@ export class BackendService {
       }
     }
     if (weatherConditionUnmapped == "PartlyCloudy") {
-      let date = new Date(res.data.current_condition[0].localObsDateTime);
+      let date = new Date(condition.localObsDateTime);
       if (date.getHours() >= 7 && date.getHours() <= 19) {
         weatherConditionMapped = "PARTLY_CLOUDY_DAY";
       } else {
@@ -72,11 +81,24 @@ export class BackendService {
     if (weatherConditionUnmapped == "Fog") {
       weatherConditionMapped = "FOG";
     }
-    // console.log(res.data);
-  }
-
-  hello(name: string): string {
-    console.log(`Server request receive with parameter ${name}`);
-    return `Hello, ${name}!`;
+    const actualTemperature = condition.temp_C;
+    const address = resLocation.data.address;
+    const humidity = condition.humidity;
+    const wind = condition.windspeedKmph;
+    const precipitation = condition.precipMM;
+    const pressure = condition.pressure;
+    const sunrise = resV2.data.results.sunrise;
+    const sunset = resV2.data.results.sunset;
+    return {
+      actualTemperature: actualTemperature,
+      weatherCondition: weatherConditionMapped,
+      location: address,
+      humidity: humidity,
+      wind: wind,
+      precipitation: precipitation,
+      pressure: pressure,
+      sunrise: sunrise,
+      sunset: sunset,
+    };
   }
 }
