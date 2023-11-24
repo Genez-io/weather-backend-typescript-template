@@ -24,11 +24,6 @@ export class BackendService {
 
     const res = await axios.get(`https://wttr.in/${location}?M&format=j1`);
     const condition = res.data.current_condition[0];
-    const lat = resLocation.data.latitude;
-    const lng = resLocation.data.longitude;
-    const resV2 = await axios.get(
-      `https://api.sunrisesunset.io/json?lat=${lat}&lng=${lng}`
-    );
     let weatherConditionMapped: string = "CLEAR_DAY";
     const weatherConditionUnmapped = condition.weatherDesc[0].value;
     if (weatherConditionUnmapped == "Sunny") {
@@ -87,8 +82,6 @@ export class BackendService {
     const wind = condition.windspeedKmph;
     const precipitation = condition.precipMM;
     const pressure = condition.pressure;
-    const sunrise = resV2.data.results.sunrise;
-    const sunset = resV2.data.results.sunset;
     return {
       actualTemperature: actualTemperature,
       weatherCondition: weatherConditionMapped,
@@ -97,8 +90,6 @@ export class BackendService {
       wind: wind,
       precipitation: precipitation,
       pressure: pressure,
-      sunrise: sunrise,
-      sunset: sunset,
     };
   }
 }

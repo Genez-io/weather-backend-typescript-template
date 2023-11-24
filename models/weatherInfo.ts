@@ -6,6 +6,4 @@ export type WeatherInfo = {
   wind: string;
   precipitation: string;
   pressure: string;
-  sunrise: string;
-  sunset: string;
 };
