@@ -1,6 +1,7 @@
 import { GenezioDeploy } from "@genezio/types";
 import { WeatherInfo } from "./models/weatherInfo";
 import axios from "axios";
+import { weatherMapping } from "./models/weatherMapping";
 
 @GenezioDeploy()
 export class BackendService {
@@ -12,29 +13,11 @@ export class BackendService {
 
   #mapWeatherCondition(rawCondition: string): string {
     let weatherConditionMapped = "CLEAR_DAY";
-    switch (true) {
-      case rawCondition === "Sunny":
-        weatherConditionMapped = "CLEAR_DAY";
+    for (const [raw, mapping] of weatherMapping.entries()) {
+      if (raw.includes(rawCondition)) {
+        weatherConditionMapped = mapping;
         break;
-      case rawCondition === "PartlyCloudy":
-        weatherConditionMapped = "PARTLY_CLOUDY_DAY";
-        break;
-      case rawCondition.indexOf("Cloudy") != -1:
-        weatherConditionMapped = "CLOUDY";
-        break;
-      case rawCondition.indexOf("Sleet") != -1:
-        weatherConditionMapped = "SLEET";
-        break;
-      case rawCondition.indexOf("Snow") != -1:
-        weatherConditionMapped = "SNOW";
-        break;
-      case rawCondition.indexOf("Rain") != -1 ||
-        rawCondition.indexOf("Showers") != -1:
-        weatherConditionMapped = "RAIN";
-        break;
-      case rawCondition === "Fog":
-        weatherConditionMapped = "FOG";
-        break;
+      }
     }
     return weatherConditionMapped;
   }
@@ -62,6 +45,8 @@ export class BackendService {
       wind: condition.windspeedKmph,
       precipitation: condition.precipMM,
       pressure: condition.pressure,
+      localObsTime: condition.localObsDateTime,
+      originalLocation: location,
     };
   }
 }

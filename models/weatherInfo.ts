@@ -6,4 +6,6 @@ export type WeatherInfo = {
   wind: string;
   precipitation: string;
   pressure: string;
+  originalLocation: string;
+  localObsTime: string;
 };
