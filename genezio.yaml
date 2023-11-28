@@ -1,4 +1,4 @@
-name: wheather-backend-typescript-template
+name: weather-backend-typescript-template
 region: us-east-1
 language: ts
 cloudProvider: genezio
