@@ -4,7 +4,7 @@ import axios from "axios";
 import { weatherMapping } from "./models/weatherMapping";
 
 @GenezioDeploy()
-export class BackendService {
+export class WeatherService {
   favorites: Array<string>;
 
   constructor() {
@@ -29,6 +29,7 @@ export class BackendService {
   async getFavorites(): Promise<Array<string>> {
     return this.favorites;
   }
+
   async getWeather(location: string): Promise<WeatherInfo> {
     const resLocation = await axios.get(
       `https://wttr.in/:geo-location?location=${location}`
@@ -36,10 +37,12 @@ export class BackendService {
     const res = await axios.get(`https://wttr.in/${location}?M&format=j1`);
 
     const condition = res.data.current_condition[0];
-    const rawWeather = condition.weatherDesc[0].value;
+
     return {
       actualTemperature: condition.temp_C,
-      weatherCondition: this.#mapWeatherCondition(rawWeather),
+      weatherCondition: this.#mapWeatherCondition(
+        condition.weatherDesc[0].value
+      ),
       location: resLocation.data.address,
       humidity: condition.humidity,
       wind: condition.windspeedKmph,
