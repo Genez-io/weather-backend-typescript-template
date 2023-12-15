@@ -1,8 +1,8 @@
-name: weather-backend-typescript-template
-region: us-east-1
+name: (•◡•)project-name(•◡•)
+region: (•◡•)region(•◡•)
 language: ts
 cloudProvider: genezio
 scripts:
-    preBackendDeploy: npm install
-    preStartLocal: npm install
+  preBackendDeploy: npm install
+  preStartLocal: npm install
 packageManager: npm
